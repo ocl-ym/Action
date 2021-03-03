@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.SparseIntArray;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -22,6 +23,18 @@ import java.util.logging.LogRecord;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 //    private static final Paint PAINT = new Paint();
+
+    /**
+     * パワーゲージを表示する
+     * @param POER_GAUGE_HEIGHT パワーゲージの高さ
+     * @param PAINT_POWER_GAUGE 色の設定
+     */
+    private static final float POWER_GAUGE_HEIGHT = 30;
+    private static final Paint PAINT_POWER_GAUGE = new Paint();
+
+    static {
+        PAINT_POWER_GAUGE.setColor(Color.RED);
+    }
 
     private static final long DRAW_INTERVAL = 1000 / 100;
 
@@ -156,7 +169,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public GameView(Context context){
         super(context);
 
-        droidBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.droid);
+        droidBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.droid_twins);
         droid = new Droid(droidBitmap,0,0, droidCallback);
 
         getHolder().addCallback(this);
@@ -208,6 +221,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         droid.move();
         droid.draw(canvas);
 
+        if (touchDownStartTime > 0){
+            float elapsedTime = System.currentTimeMillis() - touchDownStartTime;
+            canvas.drawRect(0, 0, width * (elapsedTime / MAX_TOUCH_TIME), POWER_GAUGE_HEIGHT, PAINT_POWER_GAUGE);
+        }
 //        invalidate();
     }
 
